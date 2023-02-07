@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+	<springProperty name="AP_LOG_NAME" source="application.logName" />
+	<springProperty name="AP_LOG_PATH" source="application.logPath" />
+
+	<!-- 単体開発環境 -->
+	<springProfile name="dev">
+		<property name="SPRING_PROFILE" value="dev" />
+		<property name="FORMAT" value="[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} %logger{36} - %msg%n" />
+		<property name="LOG_DIR" value="${AP_LOG_PATH}" />
+		<property name="FILNE_NAME" value="${AP_LOG_NAME}" />
+	</springProfile>
+
+	<!-- Azure試験環境 -->
+	<springProfile name="azure">
+		<property name="SPRING_PROFILE" value="azure" />
+		<property name="FORMAT" value="[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} %logger{36} - %msg%n" />
+		<property name="LOG_DIR" value="${AP_LOG_PATH}" />
+		<property name="FILNE_NAME" value="${AP_LOG_NAME}" />
+	</springProfile>
+
+	<!-- Azure試験環境(営業) -->
+	<springProfile name="azure_eigyo">
+		<property name="SPRING_PROFILE" value="azure_eigyo" />
+		<property name="FORMAT" value="[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} %logger{36} - %msg%n" />
+		<property name="LOG_DIR" value="${AP_LOG_PATH}" />
+		<property name="FILNE_NAME" value="${AP_LOG_NAME}" />
+	</springProfile>
+
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>[${SPRING_PROFILE}]${FORMAT}</pattern>
+		</encoder>
+	</appender>
+	
+	<appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_DIR}/${SPRING_PROFILE}/${FILNE_NAME}</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${LOG_DIR}/${SPRING_PROFILE}/${FILNE_NAME}.%d{yyyy-MM-dd}.log.tar.gz</fileNamePattern>
+			<maxHistory>7</maxHistory>
+		</rollingPolicy>
+		<encoder>
+			<pattern>[${SPRING_PROFILE}]${FORMAT}</pattern>
+		</encoder>
+	</appender>
+
+	<appender name="HISTORY"
+			  class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_DIR}/${SPRING_PROFILE}/history_${FILNE_NAME}</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${LOG_DIR}/${SPRING_PROFILE}/aspect_${FILNE_NAME}.%d{yyyy-MM-dd}.log.tar.gz</fileNamePattern>
+			<maxHistory>30</maxHistory>
+		</rollingPolicy>
+		<encoder>
+			<pattern>[${SPRING_PROFILE}]${FORMAT}</pattern>
+		</encoder>
+	</appender>
+
+	<logger name="jp.co.tok.common.aop.aspect.TokAspectLogger" level="debug" additivity="false">>
+		<appender-ref ref="HISTORY" />
+	</logger>
+
+	<root level="INFO">
+		<appender-ref ref="STDOUT" />
+		<appender-ref ref="FILE" />
+	</root>
+	
+</configuration>

@@ -1,0 +1,11 @@
+logging:
+    level:
+        root: INFO
+        jp.co.tok.repository: DEBUG
+        jp.co.tok: DEBUG
+application:
+    mcframe:
+        apiUrl: http://20.212.226.66/NJTM_API/api/
+        key: testAPI
+        loginUrl:
+        appCd: 1
